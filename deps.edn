@@ -1,0 +1,5 @@
+{:deps
+ {io.github.benjamin-asdf/clj-push3-play
+  {:local/root "../clj-push3-play"}
+  clj-python/libpython-clj {:mvn/version "2.025"}
+  cnuernber/dtype-next {:mvn/version "10.113"}}}

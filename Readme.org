@@ -1,0 +1,17 @@
+
+
+#+begin_src shell
+
+  uv venv
+
+  # Using CPython 3.12.11
+  # Creating virtual environment at: .venv
+  # Activate with: source .venv/bin/activate
+
+  source .venv/bin/activate
+
+  uv install torch
+
+#+end_src
+
+#+RESULTS:
