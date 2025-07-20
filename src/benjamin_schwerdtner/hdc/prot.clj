@@ -1,21 +1,31 @@
 (ns benjamin-schwerdtner.hdc.prot)
 
-(defprotocol VSA
-  (superposition [this inputs])
-  (bind [this inputs])
-  (unbind [this inputs])
-  (inverse [this inputs])
-  (permute
-    [this n inputs]
+(defprotocol Hd
+  (-superposition [this inputs])
+  (-bind [this inputs])
+  (-unbind [this inputs])
+  (-inverse [this inputs])
+  (-negative [this inputs])
+  (-permute
+    [this inputs n]
     [this inputs])
-  (permute-inverse
-    [this n inputs]
+  (-permute-inverse
+    [this inputs n]
     [this inputs])
-  (normalize [this inputs])
-  (seed [this])
-  (empty [this])
-  (ones [this])
-  (unit-vector [this]))
+  (-normalize [this inputs])
+  (-similarity [this hd book]))
+
+
+
+;; (-seed [this batch-dim])
+;; (-zeroes [this])
+;; (-ones [this])
+;; (-unit-vector [this])
+
+
+
+
+;; ---------------------
 
 ;; data
 (defprotocol HDMap)
