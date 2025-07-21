@@ -1,5 +1,4 @@
 
-
 #+begin_src shell
 
   uv venv
@@ -13,5 +12,3 @@
   uv install torch
 
 #+end_src
-
-#+RESULTS:
