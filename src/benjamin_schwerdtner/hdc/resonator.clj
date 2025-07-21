@@ -6,14 +6,12 @@
 
 ;; The problem
 ;;
-;; `factorize`, given x find the contributing hdvs (a,b,c).
+;; `factorize`, given a hd find the contributing hdvs:
 
-;; - You bind hdvs x = bind(a, permute(b,1) , permute(c,2),...), you want to
 ;;
-;;
-;; 1. Given a list of codebooks, book-0, book-1, book-2, ...
-;; 2. Given a hd `x`.
-;; 3. Find which hypervectors in each book that produce x, such that
+;; 1. Given a hd `x`.
+;; 2. Given a list of codebooks, book-0, book-1, book-2, ...
+;; 3. Find a hypervector for each book that together produce x, such that
 ;;
 ;;
 ;;           a-0 ∈ book-0, a-1 ∈ book-1, ...
@@ -35,7 +33,33 @@
 
 ;; [[benjamin-schwerdtner.hdc.data/bound-seq]]
 
-(defn exhaustive-search-factorize [x books]
+
+
+;; The reference factorizer implementation, and the baseline to meassure the following by.
+;;
+
+(defn exhaustive-search-factorize
+  "Returns a seq of hdvs from `books`,
+
+  such that
+
+
+            a-0 ∈ book-0, a-1 ∈ book-1, ...
+
+  and       x = bind(p(a-0,0), p(a-1,1), ... )
+
+
+  where p(x,n) is [[hd/permute]]. I.e. this is the
+  [[benjamin-schwerdtner.hdc.data/bound-seq]]
+
+  We say the hdvs are the factors of x and this function factorizes x.
+
+  Returns nil, if no such list of vectors is found.
+
+  This does an exhaustive search over all possible hdv combinations.
+
+  "
+  [x books]
   ;; search space is the cartesian product of the hdvs in books
   (->>
    (apply cartesian-product books)

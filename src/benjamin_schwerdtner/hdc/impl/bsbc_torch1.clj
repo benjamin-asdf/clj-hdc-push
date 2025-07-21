@@ -7,6 +7,9 @@
 
 (require-python '[torch :as torch])
 
+;; High-Dimensional Computing with Sparse Vectors
+;; M. Laiho et.al. 2015
+
 (defn normalize-inputs
   "Convert either a seq of tensors or a single multi-dim tensor to a consistent format"
   [inputs]
@@ -87,13 +90,7 @@
    (let [{:bsbc/keys [N]} *default-opts*]
      (torch/einsum
       "ij->j"
-      ;; hm
-      (normalize-inputs inputs)
-      ;; (torch/reshape (normalize-inputs inputs)
-      ;;                [-1 N])
-      ))))
-
-
+      (normalize-inputs inputs)))))
 
 (comment
   (torch/einsum "ij->j"
@@ -145,6 +142,7 @@
 
 
 (defn permute
+  ""
   ([inputs] (permute inputs 1))
   ([inputs n]
    (let [{:bsbc/keys [block-size]} *default-opts*]

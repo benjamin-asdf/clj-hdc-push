@@ -1,3 +1,11 @@
+* clj-hdc-push
+
+- supposed to be a hdc lib for [[https://github.com/benjamin-asdf/clj-push3-play][clj-push3-play]].
+- Currently, it's a clojure hdc exploration project.
+
+- Uses libpython-clj2
+
+* Setup
 
 #+begin_src shell
 
@@ -12,3 +20,112 @@
   uv install torch
 
 #+end_src
+
+- currently :cuda torch device is hardcoded
+
+- I use dev.el to start a clojure repl, (python path needs to be set for the clojure process)
+
+* Impl (py torch)
+
+** Map Multiply Permute
+
+[[file:src/benjamin_schwerdtner/hdc/impl/map_torch.clj]]
+
+Hyperdimensional Computing: An Introduction to Computing in Distributed Representation with High-Dimensional Random Vectors
+P. Kanerva 2009
+
+** Binary Block Sparse Codes
+
+[[file:src/benjamin_schwerdtner/hdc/impl/bsbc_torch1.clj]]
+
+High-Dimensional Computing with Sparse Vectors
+M. Laiho et.al. 2015
+
+* Computing in Superposition (Datatype lib)
+
+- provides a few of the common hyperdimensional implementations for
+  sequences, maps, trees, directed graphs, finite state machines, multisets
+
+[[file:src/benjamin_schwerdtner/hdc/data.clj]]
+
+
+A really cool reference is:
+
+Vector Symbolic Architectures as a Computing Framework for Emerging Hardware
+Denis Kleyko, Mike Davies, E. Paxon Frady, Pentti Kanerva, Spencer J. Kent, Bruno A. Olshausen, Evgeny Osipov, Jan M. Rabaey, Dmitri A. Rachkovskij, Abbas Rahimi, Friedrich T. Sommer
+
+https://arxiv.org/abs/2106.05268
+
+** Ambiguity primitives
+
+#+begin_src clojure
+
+;;
+;; Ambiguity
+;;
+;; These are just ideas.
+;;
+;; =================================
+;;
+
+;;
+
+
+;; similar to 'dropout'
+;; 'vanishingly?' - didn't pick it because word is used in ML.
+
+(defn barely
+  "Returns an hd that represents `x` to a tiny amount.
+
+  `p`: The amount of x left over after the operation, default 10%.
+  "
+  ([x] (barely x 0.1))
+  ([x p] (hd/drop-rand x (- 1 p))))
+
+(defn mostly
+  "Returns an hd that represents the superposition of mostly `a`
+  and a little bit of `b`.
+
+  `p`: The amount of `b` leftover.
+  "
+  ([a b] (mostly a b 0.1))
+  ([a b p]
+   (hd/superposition a (barely b p))))
+
+#+end_src
+
+[[file:src/benjamin_schwerdtner/hdc/data.clj][data.clj]]
+
+
+* Resonator networks (Factorizors)
+
+Resonator networks for factoring distributed representations of data structures
+Frady et.al 2020
+
+https://arxiv.org/abs/2007.03748
+
+WIP
+[[file:src/benjamin_schwerdtner/hdc/resonator.clj]]
+
+
+- a resonator network for block sparse hypervectors is a bit of a research topic
+
+
+* Conceptual Hyperspace (CH)
+
+Analogical Reasoning Within a Conceptual Hyperspace
+H. Goldowsky, V. Sarathy 2024
+
+https://arxiv.org/abs/2411.08684v1
+
+
+- uses HDC to model [[https://en.wikipedia.org/wiki/Conceptual_space][Conceptual space Theory]] (CST), which is a great fit.
+- Goal: provide (CH - analogy primitives)
+
+WIP
+[[file:src/benjamin_schwerdtner/hdc/analogy.clj]]
+
+
+* Inspired by
+
+- [[https://github.com/hyperdimensional-computing/torchhd][Torchhd]], a relatively majure HDC/VSA torch implementation with resonators, SDM, classifiers, ...

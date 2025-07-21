@@ -503,6 +503,14 @@
   "Returns an hd that means nothing."
   [] (hd/seed))
 
+
+
+
+
+
+
+
+
 ;; not sure
 
 ;; ∀
