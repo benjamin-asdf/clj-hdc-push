@@ -1,0 +1,47 @@
+(ns benjamin-schwerdtner.deepl.mnist2
+  (:require
+   [libpython-clj2.require :refer [require-python]]
+   [libpython-clj2.python :refer [py. py..] :as py]
+   [benjamin-schwerdtner.hdc.prot :as prot]
+   [benjamin-schwerdtner.hdc.opts :refer [*default-opts* *torch-device*]]))
+
+
+
+(require-python '[torch :as torch])
+(require-python '[torch.nn :as nn])
+(require-python '[torch.nn.functional :as F])
+(require-python '[torch.optim :as optim])
+(require-python '[torchvision :as torchvision])
+(require-python '[torchvision.datasets :refer [MNIST]])
+(require-python '[torchvision.transforms :as transforms])
+(require-python '[torch.optim.lr_scheduler :refer [StepLR]])
+
+(defn create-net
+  []
+  (nn/Sequential
+
+;; class Net(nn.Module):
+;;     def __init__(self):
+;;         super(Net, self).__init__()
+;;         self.conv1 = nn.Conv2d(1, 32, 3, 1)
+;;         self.conv2 = nn.Conv2d(32, 64, 3, 1)
+;;         self.dropout1 = nn.Dropout(0.25)
+;;         self.dropout2 = nn.Dropout(0.5)
+;;         self.fc1 = nn.Linear(9216, 128)
+;;         self.fc2 = nn.Linear(128, 10)
+
+;;     def forward(self, x):
+;;         x = self.conv1(x)
+;;         x = F.relu(x)
+;;         x = self.conv2(x)
+;;         x = F.relu(x)
+;;         x = F.max_pool2d(x, 2)
+;;         x = self.dropout1(x)
+;;         x = torch.flatten(x, 1)
+;;         x = self.fc1(x)
+;;         x = F.relu(x)
+;;         x = self.dropout2(x)
+;;         x = self.fc2(x)
+;;         output = F.log_softmax(x, dim=1)
+;;         return output
+   ))

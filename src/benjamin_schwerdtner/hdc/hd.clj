@@ -1,7 +1,10 @@
 (ns benjamin-schwerdtner.hdc.hd
   (:require
    ;; [benjamin-schwerdtner.hdc.impl.map-torch :as map-impl]
-   [benjamin-schwerdtner.hdc.impl.map-torch :as impl]))
+
+
+   ;; [benjamin-schwerdtner.hdc.impl.map-torch :as impl]
+   [benjamin-schwerdtner.hdc.impl.bsbc-torch1 :as impl]))
 
 (defprotocol VSA
   (-superposition [this inputs])
@@ -53,11 +56,10 @@
 
 (defn bind
   ([a b] (impl/bind a b))
-  ([inputs]
-   (impl/bind inputs)))
+  ([inputs] (impl/bind inputs)))
 
 (defn unbind
-  ([a b] (impl/bind a b))
+  ([a b] (impl/unbind a b))
   ([inputs]
    (impl/unbind inputs)))
 
@@ -81,25 +83,40 @@
 (defn zeroes []
   (impl/zeroes))
 
-(defn ones []
-  (impl/ones))
+(defn ones [] (impl/ones))
 
 (defn unit-vector [] (impl/unit-vector))
 
+(defn similarity* [hd book] (impl/similarity* hd book))
+
 (defn similarity [hd book] (impl/similarity hd book))
 
-(defn non-commutative-bind [a b] (impl/non-commutative-bind a b))
+;; a -> b
+(defn non-commutative-bind [a b]
+  (bind a (permute b)))
 
-(defn non-commutative-unbind [x a] (impl/non-commutative-unbind x a))
+;; given a, get b
+(defn non-commutative-unbind [x a]
+  (permute-inverse (unbind x a)))
 
-(defn non-commutative-unbind-reverse [x b] (impl/non-commutative-unbind-reverse x b))
+;; given b, get a
+(defn non-commutative-unbind-reverse [x b]
+  (unbind x (permute b)))
+
+;; ----------------------------
+
+(defn cleanup
+  ([hd book] (impl/cleanup hd book))
+  ([hd book threshold] (impl/cleanup hd book threshold)))
 
 (defn cutoff
   ;; this - is MAP specific
   ([x v] (impl/cutoff x (- v) v))
-  ([x low high]
-   (impl/cutoff x low high)))
+  ([x low high] (impl/cutoff x low high)))
 
 (defn drop-rand
   [x probability]
   (impl/drop-rand x probability))
+
+(defn multiply [inputs alpha]
+  (impl/multiply inputs alpha))

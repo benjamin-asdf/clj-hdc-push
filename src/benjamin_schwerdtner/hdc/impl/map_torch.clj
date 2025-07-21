@@ -1,9 +1,10 @@
 (ns benjamin-schwerdtner.hdc.impl.map-torch
-  (:require [libpython-clj2.require :refer [require-python]]
-            [libpython-clj2.python :refer [py. py..] :as py]
-            ;; [benjamin-schwerdtner.hdc.prot :as prot]
-            [benjamin-schwerdtner.hdc.opts :refer [*default-opts*
-                                                   *torch-device*]]))
+  (:require
+   [libpython-clj2.require :refer [require-python]]
+   [libpython-clj2.python :refer [py. py..] :as py]
+   ;; [benjamin-schwerdtner.hdc.prot :as prot]
+   [benjamin-schwerdtner.hdc.opts :refer [*default-opts*
+                                          *torch-device*]]))
 
 (require-python '[torch :as torch])
 
@@ -16,9 +17,8 @@
   "Convert either a seq of tensors or a single multi-dim tensor to a consistent format"
   [inputs]
   (if (sequential? inputs)
-    (torch/stack (vec inputs))
+    (torch/cat (vec inputs))
     inputs))
-
 
 (defn seed [batch-dim]
   (let [{:map/keys [dimensions]} *default-opts*]
@@ -73,7 +73,6 @@
 ;; ... as a consequence, the inverse is identity
 (def inverse identity)
 
-
 (defn unit-vector
   "Returns the unit vector.
 
@@ -84,7 +83,6 @@
   []
   (ones))
 
-
 (defn permute
   "Permutes the inputs by a given n.
 
@@ -93,7 +91,6 @@
    (permute inputs 1))
   ([inputs n]
    (torch/roll inputs n)))
-
 
 (defn permute-inverse
   "Inverse of the permutation.
@@ -105,52 +102,33 @@
   ([inputs n]
    (permute inputs (- n))))
 
-
-    ;; def dot_similarity(self, others: "MAPTensor", *, dtype=None) -> Tensor:
-    ;;     """Inner product with other hypervectors"""
-    ;;     if dtype is None:
-    ;;         dtype = torch.get_default_dtype()
-
-    ;;     if others.dim() >= 2:
-    ;;         others = others.transpose(-2, -1)
-
-    ;;     return torch.matmul(self.to(dtype), others.to(dtype))
-
-
+;; dot similiarity, normalized to -1 and 1
 (defn similarity
-  "Returns a similarity meassure between 0 and 1.
+  "Returns a similarity meassure between -1 and 1.
 
   `book` is a stack/book of tensors.
-
-  This looks at the overlap where the sign of the vectors agree.
-
-
   "
   [hd book]
-
-  (let [{:map/keys [dimensions]} *default-opts*
-        book (-> (normalize-inputs book)
-                 (torch/reshape [-1 dimensions])
-                 (normalize))
-        hd (normalize (torch/reshape hd [dimensions]))]
-    (->
-     (torch/eq book hd)
-     (torch/sum :dim 1)
-     (torch/div dimensions)))
+  (let [book (normalize-inputs book)
+        {:map/keys [dimensions]} *default-opts*
+        book (torch/reshape book [-1 dimensions])
+        hd (torch/reshape hd [-1 dimensions])]
+    (-> (torch/einsum "ij,ij->i" hd book)
+        (torch/div dimensions))))
 
 
 
-  )
+;; --------------
 
-
-
-
+;; a -> b
 (defn non-commutative-bind [a b]
   (bind a (permute b)))
 
+;; given a, get b
 (defn non-commutative-unbind [x a]
   (permute-inverse (unbind x a)))
 
+;; given b, get a
 (defn non-commutative-unbind-reverse [x b]
   (unbind x (permute b)))
 
@@ -174,10 +152,25 @@
   (let [mask (torch/ge (torch/rand_like x) probability)]
     (torch/where mask x 0)))
 
+;; --------------------
 
+(defn cleanup
+  "Given an hd and a book of hds,
+  returns the hd with the highest similarity.
+  "
+  ([hd book] (cleanup hd book 0.2))
+  ([hd book threshold]
+   (let [book (normalize-inputs book)
+         sim (similarity hd book)
+         index (torch/argmax sim)]
+     (when
+         (<= threshold (py.. (py/get-item sim index) item))
+       (py/get-item book index)))))
 
 
 (comment
+
+
 
   (drop-rand (torch/rand [10]) 0.1)
   (drop-rand (torch/rand [10]) 1)
@@ -201,12 +194,53 @@
   (def b (seed 1))
 
   (similarity
-   (non-commutative-unbind (non-commutative-bind a b) b)
+   (non-commutative-unbind
+    (non-commutative-bind a b)
+    b)
    [a b (seed 1)])
 
-  (similarity
-   (non-commutative-unbind (non-commutative-bind a b) a)
-   [a b (seed 1)])
+
+
+  (let [book
+        (normalize-inputs [a b (seed 1)])
+        sim (similarity
+             (non-commutative-unbind (non-commutative-bind a b) a)
+             [a b (seed 1)])]
+    (similarity
+     (py/get-item
+      book
+      (torch/argmax sim))
+     b))
+
+
+  (cleanup a [a b])
+
+  (cleanup a (seed 10))
+
+
+  (let [book (seed 10)
+        x (py/get-item book 0)]
+    [(cleanup x book)
+     (similarity x (cleanup (superposition x (seed 1)) book))])
+
+
+
+  (for [n (range 10)]
+    (doall
+     (for [p (range 0 1 0.05)]
+       (let [book (seed 50)
+             x (py/get-item book 0)
+             y (cleanup (drop-rand x p) book 0.2)]
+         [:p p
+          (if-not y
+            :not-found
+            (if (= 1.0 (py.. (similarity x y) item))
+              :found
+              :found-wrong))]))))
+
+  ;; can drop 0.75% of the vector and still get it out
+
+
 
 
   (similarity
@@ -249,6 +283,19 @@
 
 
 
+  (torch/matmul
+   (torch/tensor [[1 -1 -1]])
+   (py..
+
+       (torch/tensor [[-1 -1 -1]
+                      [1 -1 -1]
+                      [0 0 0]])
+     (transpose -2 -1)))
+
+
+
+
+
   (torch/mv
    (torch/tensor [[1 -1 -1]])
    (torch/tensor [1 -1 -1]))
@@ -288,3 +335,14 @@
     (bind
      (torch/tensor [[1 2 3]
                     [1 2 3]]))))
+
+
+
+
+
+
+
+
+
+(comment
+  (do (System/gc) (py.. torch/cuda empty_cache)))
