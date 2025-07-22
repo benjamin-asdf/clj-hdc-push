@@ -21,8 +21,6 @@
 
 #+end_src
 
-- currently :cuda torch device is hardcoded
-
 - I use dev.el to start a clojure repl, (python path needs to be set for the clojure process)
 
 * Impl (py torch)
@@ -96,11 +94,11 @@ https://arxiv.org/abs/2106.05268
 
 [[file:src/benjamin_schwerdtner/hdc/data.clj][data.clj]]
 
-
-* Resonator networks (Factorizors)
+* Resonator Networks
 
 Resonator networks for factoring distributed representations of data structures
-Frady et.al 2020
+Frady, Kent, Olshausen, Sommer 2020
+Neural Computation 32, 2311-2331 (2020)
 
 https://arxiv.org/abs/2007.03748
 

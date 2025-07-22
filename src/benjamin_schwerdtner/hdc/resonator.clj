@@ -1,8 +1,13 @@
 (ns benjamin-schwerdtner.hdc.resonator
   (:require
+   [libpython-clj2.require :refer [require-python]]
+   [libpython-clj2.python :refer [py. py..] :as py]
    [benjamin-schwerdtner.hdc.data :as hdd]
    [math.combinatorics.combinatorics :refer [cartesian-product]]
    [benjamin-schwerdtner.hdc.hd :as hd]))
+
+(require-python '[torch :as torch])
+
 
 ;; The problem
 ;;
@@ -65,6 +70,53 @@
    (apply cartesian-product books)
    (some
     (fn [hdvs] (when (hdd/approx-eq? x (apply hdd/bound-seq hdvs)) hdvs)))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;; Neural Implications
+;; -------------------
+;;
+;; Biological plausible resonator networks are a potential path
+;; to illuminating possible neuronal circuits for factorization.
+;; Theorized to play a role in perception, language processing, analogical reasoning.
+;; [https://arxiv.org/abs/2106.05268 references]
+;;
+
+;;
+;; /Binding/ is the theorized process of associating features of the same (physical) object on the fly.
+;; Such has movement, size, color, etc.
+;; Von der Malsburg 1999 and others proposed synchrony based mechanism between neuronal submodules.
+;;
+;; My favorite approach is The 'Reader Centric Cell Assembly' (Buzsáki 2011).
+;; Neural syntax: cell assemblies, synapsembles and readers.
+;; https://pmc.ncbi.nlm.nih.gov/articles/PMC3005627/
+;;
+;; I have heard 'it is not clear how synchrony contributes to unified experience / attention / mentality'.
+;; This is a misconception cleaned up by Buzsáki. Synchrony only has an effect because there are downstream
+;; readers (neurons, effectors) for which synchrony does make a difference.
+;; Without a reader or downstream effect, synchrony doesn't have an effect.
+;;
+
+
+
+
+
+
+
+
 
 
 

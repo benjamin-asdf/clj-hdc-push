@@ -2,10 +2,16 @@
   (:require
    [libpython-clj2.require :refer [require-python]]
    [libpython-clj2.python :refer [py. py..] :as py]
+
    [benjamin-schwerdtner.hdc.prot :as prot]
    [benjamin-schwerdtner.hdc.opts :refer [*default-opts* *torch-device*]]))
 
 (require-python '[torch :as torch])
+
+(alter-var-root #'*torch-device*
+                (constantly
+                 (if (py.. torch/cuda is_available) :cuda :cpu)))
+
 
 ;; High-Dimensional Computing with Sparse Vectors
 ;; M. Laiho et.al. 2015
@@ -302,37 +308,14 @@
 (defn multiply [x alpha]
   (torch/mul x alpha))
 
-
-
-
-
-
-
-
 (comment
-
-
   (torch/roll (torch/tensor [0 0 1 1 2 2]) 2)
-
   (similarity (seed) (seed 10))
-
-
-
-
-  (from-indices
-   (torch/randint 0 3 [2 3] :device *torch-device*)
-   )
+  (from-indices (torch/randint 0 3 [2 3] :device *torch-device*))
 
 
   (py.. (torch/tensor [64]) (repeat (py/->py-tuple [1 3])))
   (py.. (torch/tensor [2]) (repeat (py/->py-tuple [1 3])))
-
-
-  ;; tensor([[64],
-  ;;         [64]])
-
-
-
 
   (binding [*default-opts*
             {:bsbc/N 9 :bsbc/block-count 3 :bsbc/block-size 3}]
@@ -342,10 +325,7 @@
           x (bind a b)]
       [ ;; inds
        inds (from-indices inds) #_(indices (from-indices inds)) x
-       (indices x)
-       (torch/allclose a (unbind x b))]))
-
-
+       (indices x) (torch/allclose a (unbind x b))]))
 
   (binding [*default-opts*
             {:bsbc/N 9 :bsbc/block-count 3 :bsbc/block-size 3}]
@@ -378,9 +358,7 @@
          (indices b)
          (indices (inverse b))
          (torch/allclose a (unbind (bind a b) b))
-         (torch/allclose a (bind (bind a b) (inverse b)))]
-
-        ))
+         (torch/allclose a (bind (bind a b) (inverse b)))]))
 
 
   (binding [*default-opts*
@@ -414,9 +392,4 @@
         v (bind a b)]
     [(torch/allclose a (unbind v b))
      (torch/allclose a (bind v (inverse b)))])
-  [true true]
-
-
-
-
-  [true tensor([1., 0.], device='cuda:0')])
+  [true true])
