@@ -14,6 +14,7 @@
 (require-python '[torchvision.transforms :as transforms])
 (require-python '[torch.optim.lr_scheduler :refer [StepLR]])
 
+;; this one also does 99%
 (defn create-net
   []
   (nn/Sequential (nn/Conv2d 1 32 3 :stride 1)
@@ -31,6 +32,7 @@
 
 
 ;; https://medium.com/data-science/going-beyond-99-mnist-handwritten-digits-recognition-cfff96337392
+;; something doesn't work
 (defn create-cnn-model-beyond-99
   "Create CNN model for MNIST classification"
   []
@@ -182,7 +184,8 @@
   (def optimizer (optim/Adam (py. model parameters) :lr 1.0))
   (def scheduler (StepLR optimizer :step_size 1 :gamma 0.7))
 
-  ;; Training loop (14 epochs like PyTorch example)
+  ;; Training loop (14 epochs in PyTorch example
+
   (doseq [epoch (range 1 2)]
     (train model device train-loader optimizer epoch)
     (test model device test-loader)
@@ -194,10 +197,7 @@
 
   (test model device test-loader)
 
-
   ;; recreate the model
-
-
   (def loaded-model
     (let [w (torch/load "mnist_cnn.pt")
           m1 (create-net)]
