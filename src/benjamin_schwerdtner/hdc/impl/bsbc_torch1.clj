@@ -137,8 +137,10 @@
   ;; [true tensor([1., 0.], device='cuda:0')]
 
   "
+  ([inputs]
+   (let [[a & rst] (vec (normalize-inputs inputs))]
+     (unbind a (bind rst))))
   ([a b] (bind a b -1)))
-
 
 
 (defn permute
