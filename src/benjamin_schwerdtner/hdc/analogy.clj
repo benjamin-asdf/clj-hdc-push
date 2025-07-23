@@ -1,6 +1,6 @@
 (ns benjamin-schwerdtner.hdc.analogy
   (:require [benjamin-schwerdtner.hdc.hd :as hd])
-  (:refer-clojure :exclude [sequence nth assoc contains?]))
+  (:refer-clojure :exclude [find]))
 
 ;;
 ;; Analogy
@@ -142,9 +142,101 @@
 ;;
 ;;
 
+;; Mapping
+
+;; A : B :: C : X
+
+;; determine the structural correspondance (frame) between A and B
+;; find X by applying it to C.
+
+;; overall:
+
+;; points in the basis domain
+;;
+;;
+;;
+;;
+;; point-a ∈ A
+;; point-B ∈ B
+;; ...
 
 
 
+(declare encode find decode)
+
+(defn mapping [points books]
+  (let [hdvs (encode points)
+        x (find points books)]
+    ;; point-x
+    (decode x)))
+
+;; -------------------------------------
+;; Example D = Color domain,
+;; basis: hue, saturation, brightness,
+;; k = 3
+;; -------------------------------------
+;;
+;;
+;; 1. normalize and put into levels for values
+;;
+;;    [hue,       saturation,   brightness]
+;;
+;; => hue: val in range [-10,10] with step 0.5
+;;    saturation:
+;;    brightness:
+;;
+
+;; 2. We obtain 3 code books for Hue,Sat,Bright., each with 40 hdvs standing for the levels
+;;
+
+(defn encode [[hue saturation brightness]]
+
+  )
+
+
+
+;; I'm not sure why they say 41 buckets?
+;; I count 40
+(count (range -10 10 0.5))
+
+
+
+
+
+
+;; For analogies confined to ojbect categories,
+;; CST recommends the Parallelogram model
+;; [Rumelhart and Abrahamson, 1973]
+(defn find [a b c]
+
+  ;; (c ⊙ a^-1 ) ⊙ b
+
+  )
+
+
+;;
+(def codebook (memoize (fn [resolution k])))
+
+(defn codebook [n] (hd/seed n))
+
+(def codebooks
+  (memoize
+   (fn [resolution k]
+     ;; e.g.
+     ;; resolution = 40 (40 levels, buckets for the domain values).
+     ;; k = 3  —  Hue, Saturation, Brightness
+     (into []
+           (repeatedly k #(codebook resolution))))))
+
+
+
+
+
+;;
+(defn decode [x resolution]
+
+
+  )
 
 
 (defn prototype [x] x)
